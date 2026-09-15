@@ -1,15 +1,13 @@
 {
-  "referenceEndpoint": "/telemetry",
+  "referenceEndpoint": "/waterpump/flat-psi",
   "referencePayload": {
     "dataFormat": "JSON",
     "data": {
-      "time": "2026-09-02T18:00:00.000000Z",
       "motorTemperature": 68.4,
       "vibrationLevel": 1.7,
       "powerConsumption": 12.6,
       "flowRate": 247.5,
       "dischPressPsi": 62.37
     }
-  },
-  "envelopeMapping": {"timeObserved": "$.time"}
+  }
 }

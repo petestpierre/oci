@@ -1,7 +1,7 @@
 [
   {
     "condition": "*",
-    "description": "Build the motor component and convert PSI pressure to bar.",
+    "description": "Build the motor component from flat telemetry and convert PSI pressure to bar.",
     "payloadMapping": {
       "$.motor.motorTemperature": "$.motorTemperature",
       "$.motor.vibrationLevel": "$.vibrationLevel",
@@ -12,7 +12,6 @@
     "referencePayload": {
       "dataFormat": "JSON",
       "data": {
-        "time": "2026-09-02T18:00:00.000000Z",
         "motorTemperature": 68.4,
         "vibrationLevel": 1.7,
         "powerConsumption": 12.6,

@@ -2,7 +2,11 @@
 
 ## Introduction
 
-Create the authenticated Gateway 1 digital twin. Its adapter treats data sent to `/data` as gateway status telemetry and resolves a pump external key from forwarded endpoint paths such as `/water-pumps/water-pump-3`. When a target is resolved, OCI IoT delegates the message to that indirect pump's adapter.
+Create Gateway 1, an authenticated digital twin that publishes its own status and forwards telemetry for indirectly connected pumps. Its adapter treats data sent to `/data` as gateway status telemetry and resolves a pump external key from forwarded endpoint paths such as `/water-pumps/water-pump-3`. When a target is resolved, OCI IoT delegates the message to that indirect pump's adapter.
+
+If you completed the Getting Started workshop, you already created `WORKSHOP_COMPARTMENT_OCID`, `IOT_DOMAIN_OCID`, `VAULT_OCID`, and `VAULT_MASTER_KEY_OCID`. This lab reuses those values. If you are completing this lab in a separate environment, retrieve the compartment and IoT domain OCIDs from their OCI Console details pages. Retrieve the Vault OCID from the Vault details page and the master encryption key OCID from the key details page, or create a Vault and master encryption key before continuing.
+
+The Vault and master encryption key are required because this lab creates a Vault secret for Gateway 1 authentication. You create the gateway-specific details in this lab: choose `gateway-1` as the gateway external key, choose a strong plain-text secret value, then create the Vault secret and Gateway 1 twin in Task 4.
 
 Estimated Time: 45 minutes
 
@@ -26,7 +30,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
 
 ## Task 1: Set gateway variables
 
-1. Set the identifiers that describe your environment. Use the OCIDs for your own compartment, IoT domain, Vault, and key. The secret value is a lab-only password; store it in an approved password manager and do not commit it.
+1. Set the variables for your environment. If you completed the Getting Started workshop, use the OCIDs saved there. Otherwise, copy the compartment, IoT domain, Vault, and master encryption key OCIDs from the OCI Console. `GATEWAY_EXTERNAL_KEY` identifies the gateway when it connects to OCI IoT. Choose a strong value for `GATEWAY_SECRET_VALUE`; Task 4 stores it in the Vault as Gateway 1's credential.
 
     ```bash
     export WORKSHOP_DIR="$PWD"

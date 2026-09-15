@@ -2,9 +2,7 @@
 
 ## Introduction
 
-Use this appendix only when the IoT domain does not already contain the models and adapters used in this workshop. Create the model files in this order: Factory, ProductionLine, ElectricMotor, and WaterPump. The WaterPump model uses ElectricMotor as a component and includes an `installedOn` relationship whose target is ProductionLine. The same WaterPump model supports model-shaped telemetry and flat telemetry after adapter normalization.
-
-Factory and ProductionLine models are included for consistency with the Getting Started with OCI Internet of Things Platform workshop. They are not required to demonstrate gateway configuration or indirectly connected device functionality; however, the ProductionLine model is required to keep the WaterPump model consistent because its `installedOn` relationship targets that model. Installing the complete set of models is recommended to preserve compatibility with future labs.
+Use this appendix when the IoT domain lacks models or adapters required for this workshop. Create the model files in this order: Factory, ProductionLine, ElectricMotor, and WaterPump. Factory and ProductionLine align this workshop with [Get Started with OCI Internet of Things Platform](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4515); they are not needed to test gateway or indirect-device connectivity, but ProductionLine lets the WaterPump model retain its `installedOn` relationship. The WaterPump model uses ElectricMotor as a component and supports both model-shaped and flat telemetry after adapter normalization. Installing the full model set preserves compatibility with future labs.
 
 Estimated Time: 55 minutes
 
@@ -184,39 +182,35 @@ In this appendix, you will:
 
 ## Task 2: Create the default WaterPump adapter
 
-1. Create the default adapter. It requires no JSON files because the source payload already matches the WaterPump model shape and uses bar for pressure.
+1. Create the default adapter. This command matches the default adapter in the Getting Started workshop. It requires no JSON files because the source payload already matches the WaterPump model shape and uses bar for pressure. If you completed that workshop, retain its adapter OCID rather than creating a second adapter.
 
     ```bash
     export DEFAULT_WATER_PUMP_ADAPTER_ID=$(oci iot digital-twin-adapter create \
       --iot-domain-id "$IOT_DOMAIN_OCID" \
       --digital-twin-model-id "$WATER_PUMP_MODEL_ID" \
       --display-name "Water Pump Default Adapter" \
-      --description "Accepts model-shaped water-pump telemetry." \
+      --description "Default adapter for model-shaped water pump telemetry." \
       --wait-for-state ACTIVE \
       --query 'data.id' --raw-output)
     ```
 
 ## Task 3: Create the Flat PSI WaterPump adapter
 
-1. Save the Flat PSI adapter inbound envelope as `$WORKSHOP_DIR/flat-psi-water-pump-envelope.json`.
+1. Save the Flat PSI adapter inbound envelope as `$WORKSHOP_DIR/flat-psi-water-pump-envelope.json`. This definition is identical to the Flat PSI adapter in the Getting Started workshop. If that adapter already exists, use its OCID in Lab 3 rather than creating another one.
 
     ```bash
     cat > "$WORKSHOP_DIR/flat-psi-water-pump-envelope.json" <<'EOF'
     {
-      "referenceEndpoint": "/telemetry",
+      "referenceEndpoint": "/waterpump/flat-psi",
       "referencePayload": {
         "dataFormat": "JSON",
         "data": {
-          "time": "2026-09-02T18:00:00.000000Z",
           "motorTemperature": 68.4,
           "vibrationLevel": 1.7,
           "powerConsumption": 12.6,
           "flowRate": 247.5,
           "dischPressPsi": 62.37
         }
-      },
-      "envelopeMapping": {
-        "timeObserved": "$.time"
       }
     }
     EOF
@@ -229,7 +223,7 @@ In this appendix, you will:
     [
       {
         "condition": "*",
-        "description": "Build the motor component and convert PSI pressure to bar.",
+        "description": "Build the motor component from flat telemetry and convert PSI pressure to bar.",
         "payloadMapping": {
           "$.motor.motorTemperature": "$.motorTemperature",
           "$.motor.vibrationLevel": "$.vibrationLevel",
@@ -240,7 +234,6 @@ In this appendix, you will:
         "referencePayload": {
           "dataFormat": "JSON",
           "data": {
-            "time": "2026-09-02T18:00:00.000000Z",
             "motorTemperature": 68.4,
             "vibrationLevel": 1.7,
             "powerConsumption": 12.6,
@@ -260,7 +253,7 @@ In this appendix, you will:
       --iot-domain-id "$IOT_DOMAIN_OCID" \
       --digital-twin-model-id "$WATER_PUMP_MODEL_ID" \
       --display-name "Water Pump Flat PSI Adapter" \
-      --description "Maps flat water-pump telemetry and converts PSI pressure to bar." \
+      --description "Maps flat pump telemetry to WaterPump and converts PSI pressure to bar." \
       --inbound-envelope "file://$WORKSHOP_DIR/flat-psi-water-pump-envelope.json" \
       --inbound-routes "file://$WORKSHOP_DIR/flat-psi-water-pump-routes.json" \
       --wait-for-state ACTIVE \
