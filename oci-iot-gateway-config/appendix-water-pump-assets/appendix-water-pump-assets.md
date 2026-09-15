@@ -1,16 +1,18 @@
-# Appendix A: Create Required WaterPump Models and Adapters
+# Appendix A: Create Required Factory, Production Line, and WaterPump Assets
 
 ## Introduction
 
-Use this appendix only when the IoT domain does not already contain the ElectricMotor and WaterPump models and the two WaterPump adapters used in Lab 3. These assets are intentionally separated from the gateway-specific work in Lab 2. The same WaterPump model supports model-shaped telemetry and flat telemetry after adapter normalization.
+Use this appendix only when the IoT domain does not already contain the models and adapters used in this workshop. Create the model files in this order: Factory, ProductionLine, ElectricMotor, and WaterPump. The WaterPump model uses ElectricMotor as a component and includes an `installedOn` relationship whose target is ProductionLine. The same WaterPump model supports model-shaped telemetry and flat telemetry after adapter normalization.
 
-Estimated Time: 45 minutes
+Factory and ProductionLine models are included for consistency with the Getting Started with OCI Internet of Things Platform workshop. They are not required to demonstrate gateway configuration or indirectly connected device functionality; however, the ProductionLine model is required to keep the WaterPump model consistent because its `installedOn` relationship targets that model. Installing the complete set of models is recommended to preserve compatibility with future labs.
+
+Estimated Time: 55 minutes
 
 ### Objectives
 
 In this appendix, you will:
 
-- Create the ElectricMotor and WaterPump models.
+- Create the Factory, ProductionLine, ElectricMotor, and WaterPump models.
 - Create the default WaterPump adapter.
 - Create the Flat PSI WaterPump adapter.
 - Record and verify the resulting OCIDs.
@@ -21,7 +23,7 @@ In this appendix, you will:
 - A writable working directory.
 - Permission to create digital twin models and adapters in the IoT domain.
 
-## Task 1: Create the ElectricMotor and WaterPump models
+## Task 1: Create the Factory, ProductionLine, ElectricMotor, and WaterPump models
 
 1. Set your working directory and IoT domain OCID. The following commands save the model specifications as JSON files in the working directory.
 
@@ -30,7 +32,41 @@ In this appendix, you will:
     export IOT_DOMAIN_OCID='<iot-domain-ocid>'
     ```
 
-2. Save the ElectricMotor model specification as `$WORKSHOP_DIR/electric-motor-model.json`.
+2. Save the Factory model specification as `$WORKSHOP_DIR/factory-model.json`. This model defines the `contains` relationship and has no telemetry, property, or command content.
+
+    ```bash
+    cat > "$WORKSHOP_DIR/factory-model.json" <<'EOF'
+    {
+      "@context": "dtmi:dtdl:context;3",
+      "@id": "dtmi:com:oracle:beverage:Factory;1",
+      "@type": "Interface",
+      "displayName": "Factory",
+      "description": "A beverage production factory.",
+      "contents": [
+        {
+          "@type": "Relationship",
+          "name": "contains"
+        }
+      ]
+    }
+    EOF
+    ```
+
+3. Save the ProductionLine model specification as `$WORKSHOP_DIR/production-line-model.json`. This model has no DTDL content and provides the target type for the WaterPump `installedOn` relationship.
+
+    ```bash
+    cat > "$WORKSHOP_DIR/production-line-model.json" <<'EOF'
+    {
+      "@context": "dtmi:dtdl:context;3",
+      "@id": "dtmi:com:oracle:beverage:ProductionLine;1",
+      "@type": "Interface",
+      "displayName": "Production Line",
+      "description": "A beverage factory production line."
+    }
+    EOF
+    ```
+
+4. Save the ElectricMotor model specification as `$WORKSHOP_DIR/electric-motor-model.json`.
 
     ```bash
     cat > "$WORKSHOP_DIR/electric-motor-model.json" <<'EOF'
@@ -63,7 +99,7 @@ In this appendix, you will:
     EOF
     ```
 
-3. Save the WaterPump model specification as `$WORKSHOP_DIR/water-pump-model.json`. Its `motor` component references the ElectricMotor DTMI created in the preceding file.
+5. Save the WaterPump model specification as `$WORKSHOP_DIR/water-pump-model.json`. Its `motor` component references ElectricMotor and its `installedOn` relationship targets ProductionLine. This definition is identical to the WaterPump model in the Getting Started workshop.
 
     ```bash
     cat > "$WORKSHOP_DIR/water-pump-model.json" <<'EOF'
@@ -94,15 +130,34 @@ In this appendix, you will:
           "name": "dischargePressure",
           "schema": "double",
           "unit": "bar"
+        },
+        {
+          "@type": "Relationship",
+          "name": "installedOn",
+          "target": "dtmi:com:oracle:beverage:ProductionLine;1"
         }
       ]
     }
     EOF
     ```
 
-4. Create the ElectricMotor model before the WaterPump model because WaterPump references its DTMI as a component.
+6. Create the models in the same order as their files: Factory, ProductionLine, ElectricMotor, then WaterPump. This order creates the referenced ProductionLine and ElectricMotor DTMIs before the WaterPump model.
 
     ```bash
+    export FACTORY_MODEL_ID=$(oci iot digital-twin-model create \
+      --iot-domain-id "$IOT_DOMAIN_OCID" \
+      --display-name "Factory Model" \
+      --spec "file://$WORKSHOP_DIR/factory-model.json" \
+      --wait-for-state ACTIVE \
+      --query 'data.id' --raw-output)
+
+    export PRODUCTION_LINE_MODEL_ID=$(oci iot digital-twin-model create \
+      --iot-domain-id "$IOT_DOMAIN_OCID" \
+      --display-name "Production Line Model" \
+      --spec "file://$WORKSHOP_DIR/production-line-model.json" \
+      --wait-for-state ACTIVE \
+      --query 'data.id' --raw-output)
+
     export ELECTRIC_MOTOR_MODEL_ID=$(oci iot digital-twin-model create \
       --iot-domain-id "$IOT_DOMAIN_OCID" \
       --display-name "Electric Motor Model" \
@@ -118,9 +173,11 @@ In this appendix, you will:
       --query 'data.id' --raw-output)
     ```
 
-5. Verify both stored specifications.
+7. Verify the four stored specifications.
 
     ```bash
+    oci iot digital-twin-model get-spec --digital-twin-model-id "$FACTORY_MODEL_ID"
+    oci iot digital-twin-model get-spec --digital-twin-model-id "$PRODUCTION_LINE_MODEL_ID"
     oci iot digital-twin-model get-spec --digital-twin-model-id "$ELECTRIC_MOTOR_MODEL_ID"
     oci iot digital-twin-model get-spec --digital-twin-model-id "$WATER_PUMP_MODEL_ID"
     ```
@@ -210,9 +267,9 @@ In this appendix, you will:
       --query 'data.id' --raw-output)
     ```
 
-## Task 4: Verify the WaterPump assets
+## Task 4: Verify the WaterPump adapters
 
-1. List active adapters for the WaterPump model. Retain all three exported IDs for Lab 3.
+1. List active adapters for the WaterPump model. Retain the exported adapter IDs for Lab 3.
 
     ```bash
     oci iot digital-twin-adapter list \

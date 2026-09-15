@@ -21,7 +21,7 @@ In this lab, you will:
 - Have the ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters in the IoT domain.
 - Retain `IOT_DOMAIN_OCID`, `GATEWAY_INSTANCE_ID`, `GATEWAY_EXTERNAL_KEY`, `GATEWAY_SECRET_VALUE`, and `IOT_DEVICE_HOST` from Lab 2.
 
-If the WaterPump models or adapters are missing, create them with [Appendix A: Create Required WaterPump Models and Adapters](../appendix-water-pump-assets/appendix-water-pump-assets.md).
+If the WaterPump models or adapters are missing, create them with [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](../appendix-water-pump-assets/appendix-water-pump-assets.md).
 
 ## Task 1: Locate the WaterPump assets
 

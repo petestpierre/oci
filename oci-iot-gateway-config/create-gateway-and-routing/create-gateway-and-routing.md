@@ -22,7 +22,7 @@ In this lab, you will:
   - Have an active IoT domain, an OCI CLI profile, a Vault, and a master encryption key.
   - Have the ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters available in the IoT domain.
 
-If the WaterPump models or adapters are missing, use [Appendix A: Create Required WaterPump Models and Adapters](../appendix-water-pump-assets/appendix-water-pump-assets.md) to create them.
+If the WaterPump models or adapters are missing, use [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](../appendix-water-pump-assets/appendix-water-pump-assets.md) to create them.
 
 ## Task 1: Set gateway variables
 

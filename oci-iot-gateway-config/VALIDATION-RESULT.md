@@ -1,6 +1,6 @@
 # LiveLabs Workshop Validation – oci-iot-gateway-config
 
-Generated on 2026-09-11T18:21:06.304385+00:00
+Generated on 2026-09-15T17:37:36.139098+00:00
 
 ## Structure Check
 - ✅ Required folders and workshop variants present.
@@ -12,21 +12,22 @@ Generated on 2026-09-11T18:21:06.304385+00:00
 ## Markdown File Ratings
 ### appendix-water-pump-assets/appendix-water-pump-assets.md
 - ✅ LiveLabs formatting checks passed.
-- ✍️ Lanham score: 3/5
-  - 10 sentence(s) exceed 20 words; tighten wording.
+- ✍️ Lanham score: 2/5
+  - 13 sentence(s) exceed 20 words; tighten wording.
+  - Passive voice detected in 3 instance(s).
   - Heavy nominalization usage; prefer vivid verbs.
 
 ### connect-indirect-water-pumps/connect-indirect-water-pumps.md
 - ✅ LiveLabs formatting checks passed.
 - ✍️ Lanham score: 2/5
-  - 15 sentence(s) exceed 20 words; tighten wording.
+  - 16 sentence(s) exceed 20 words; tighten wording.
   - Contractions found; expand them per Lanham rules.
   - Heavy nominalization usage; prefer vivid verbs.
 
 ### create-gateway-and-routing/create-gateway-and-routing.md
 - ✅ LiveLabs formatting checks passed.
 - ✍️ Lanham score: 1/5
-  - 12 sentence(s) exceed 20 words; tighten wording.
+  - 13 sentence(s) exceed 20 words; tighten wording.
   - Passive voice detected in 3 instance(s).
   - Contractions found; expand them per Lanham rules.
   - Heavy nominalization usage; prefer vivid verbs.
