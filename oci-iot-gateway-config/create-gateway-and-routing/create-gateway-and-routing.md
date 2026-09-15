@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Create Gateway 1, an authenticated digital twin that publishes its own status and forwards telemetry for indirectly connected pumps. Its adapter treats data sent to `/data` as gateway status telemetry and resolves a pump external key from forwarded endpoint paths such as `/water-pumps/water-pump-3`. When a target is resolved, OCI IoT delegates the message to that indirect pump's adapter.
+Create Gateway 1, an authenticated twin that publishes its status and forwards pump telemetry. Its adapter maps data sent to `/data` as gateway status. It derives a pump external key from paths such as `/water-pumps/water-pump-3`. When it resolves a target, OCI IoT sends the message to that pump's adapter.
 
-If you completed the Getting Started workshop, you already created `WORKSHOP_COMPARTMENT_OCID`, `IOT_DOMAIN_OCID`, `VAULT_OCID`, and `VAULT_MASTER_KEY_OCID`. This lab reuses those values. If you are completing this lab in a separate environment, retrieve the compartment and IoT domain OCIDs from their OCI Console details pages. Retrieve the Vault OCID from the Vault details page and the master encryption key OCID from the key details page, or create a Vault and master encryption key before continuing.
+If you completed the Getting Started workshop, reuse `WORKSHOP_COMPARTMENT_OCID`, `IOT_DOMAIN_OCID`, `VAULT_OCID`, and `VAULT_MASTER_KEY_OCID`. In a separate environment, retrieve the compartment and IoT domain OCIDs from their Console details pages. Retrieve the Vault OCID from the Vault details page and the key OCID from the master encryption key details page. Create a Vault and master encryption key first if they do not exist.
 
-The Vault and master encryption key are required because this lab creates a Vault secret for Gateway 1 authentication. You create the gateway-specific details in this lab: choose `gateway-1` as the gateway external key, choose a strong plain-text secret value, then create the Vault secret and Gateway 1 twin in Task 4.
+The Vault and master encryption key encrypt Gateway 1's authentication secret. In this lab, choose `gateway-1` as the gateway external key and choose a strong plain-text secret. Task 4 creates the Vault secret and Gateway 1 twin.
 
 Estimated Time: 45 minutes
 
@@ -23,14 +23,14 @@ In this lab, you will:
 
 - Complete the workshop introduction and Lab 1.
 - Complete [Get Started with OCI Internet of Things Platform](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4515), or ensure that both of the following prerequisites are met:
-  - Have an active IoT domain, an OCI CLI profile, a Vault, and a master encryption key.
-  - Have the ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters available in the IoT domain.
+    - Have an active IoT domain, an OCI CLI profile, a Vault, and a master encryption key.
+    - Have the ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters available in the IoT domain.
 
 If the WaterPump models or adapters are missing, use [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](../appendix-water-pump-assets/appendix-water-pump-assets.md) to create them.
 
 ## Task 1: Set gateway variables
 
-1. Set the variables for your environment. If you completed the Getting Started workshop, use the OCIDs saved there. Otherwise, copy the compartment, IoT domain, Vault, and master encryption key OCIDs from the OCI Console. `GATEWAY_EXTERNAL_KEY` identifies the gateway when it connects to OCI IoT. Choose a strong value for `GATEWAY_SECRET_VALUE`; Task 4 stores it in the Vault as Gateway 1's credential.
+1. Set the environment variables. If you completed Getting Started, use the saved OCIDs. Otherwise, copy the compartment, IoT domain, Vault, and key OCIDs from the OCI Console. `GATEWAY_EXTERNAL_KEY` identifies the gateway when it connects to OCI IoT. Choose a strong `GATEWAY_SECRET_VALUE`. Task 4 stores it in the Vault as Gateway 1's credential.
 
     ```bash
     export WORKSHOP_DIR="$PWD"
@@ -42,7 +42,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
     export GATEWAY_SECRET_VALUE='<gateway-1-plain-text-secret>'
     ```
 
-2. Retrieve the device host. Gateway 1 uses this host with MQTTs on port `8883` in Lab 3.
+2. Retrieve the device host. Lab 3 connects Gateway 1 to this host through MQTTs on port `8883`.
 
     ```bash
     export IOT_DEVICE_HOST=$(oci iot domain get \
@@ -53,7 +53,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
 
 ## Task 2: Create the GatewayStatus model
 
-1. Save the GatewayStatus model specification as `$WORKSHOP_DIR/gateway-status-model.json`. This model describes gateway-only data; it is not a WaterPump model.
+1. Save the GatewayStatus model as `$WORKSHOP_DIR/gateway-status-model.json`. It describes gateway data, not WaterPump data.
 
     ```bash
     cat > "$WORKSHOP_DIR/gateway-status-model.json" <<'EOF'
@@ -117,7 +117,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
 
 ## Task 3: Create the gateway routing adapter
 
-1. Save the inbound envelope as `$WORKSHOP_DIR/gateway-routing-envelope.json`. The envelope resolves `target` once before its routes are evaluated. An empty target keeps the message with Gateway 1; a value such as `water-pump-3` delegates the payload to the indirect twin with that external key.
+1. Save the inbound envelope as `$WORKSHOP_DIR/gateway-routing-envelope.json`. It resolves `target` before it evaluates routes. An empty target keeps the message with Gateway 1. A value such as `water-pump-3` sends the payload to the indirect twin with that external key.
 
     ```bash
     cat > "$WORKSHOP_DIR/gateway-routing-envelope.json" <<'EOF'
@@ -142,7 +142,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
     EOF
     ```
 
-2. Save the inbound routes as `$WORKSHOP_DIR/gateway-routing-routes.json`. The routes map gateway status telemetry; indirect-device telemetry is delegated to the target twin's adapter instead.
+2. Save the inbound routes as `$WORKSHOP_DIR/gateway-routing-routes.json`. The routes map gateway status telemetry. OCI IoT sends indirect-device telemetry to the target twin's adapter instead.
 
     ```bash
     cat > "$WORKSHOP_DIR/gateway-routing-routes.json" <<'EOF'
@@ -194,7 +194,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
 
 ## Task 4: Create Gateway 1
 
-1. Create a dedicated Vault secret for Gateway 1. The external key is the MQTT user name and the plain-text value is the password in this learning environment.
+1. Create a Vault secret for Gateway 1. In this lab, the external key is the MQTT user name and the plain-text value is the password.
 
     ```bash
     export GATEWAY_SECRET_OCID=$(oci vault secret create-base64 \
@@ -207,7 +207,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
       --query 'data.id' --raw-output)
     ```
 
-2. Create the gateway digital twin. A gateway requires an authentication ID and a gateway adapter.
+2. Create the gateway twin. A gateway needs an authentication ID and a gateway adapter.
 
     ```bash
     export GATEWAY_INSTANCE_ID=$(oci iot digital-twin-instance create \
@@ -222,7 +222,7 @@ If the WaterPump models or adapters are missing, use [Appendix A: Create Require
       --query 'data.id' --raw-output)
     ```
 
-3. Verify that Gateway 1 is active and has an authentication ID.
+3. Confirm that Gateway 1 is active and has an authentication ID.
 
     ```bash
     oci iot digital-twin-instance get \
