@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Create two indirectly connected water-pump twins and publish their telemetry through Gateway 1. Water Pump 3 sends telemetry that already matches the WaterPump model. Water Pump 4 sends flat telemetry with pressure in PSI. Both payloads reach OCI through Gateway 1, but each target twin uses its own adapter to produce the same canonical WaterPump state.
+Create two indirect water-pump twins and publish telemetry through Gateway 1. Water Pump 3 sends telemetry that matches the WaterPump model. Water Pump 4 sends flat telemetry with pressure in PSI. Each target twin uses its adapter to produce the same canonical WaterPump state.
 
 Estimated Time: 65 minutes
 
@@ -10,7 +10,7 @@ Estimated Time: 65 minutes
 
 In this lab, you will:
 
-- Create indirect twins that share one gateway association.
+- Create indirect twins that share a gateway association.
 - Reuse the default and Flat PSI WaterPump adapters.
 - Publish two source payload shapes through one MQTTs connection.
 - Verify normalized values and the gateway association.
@@ -25,7 +25,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
 
 ## Task 1: Locate the WaterPump assets
 
-1. List active WaterPump adapters. Identify **Water Pump Default Adapter** and **Water Pump Flat PSI Adapter**, the same adapter definitions used in the Getting Started workshop. Set their existing OCIDs; do not create duplicate adapters with the same display names.
+1. List active WaterPump adapters. Identify **Water Pump Default Adapter** and **Water Pump Flat PSI Adapter**. They match the adapters in the Getting Started workshop. Set their existing OCIDs. Do not create adapters with duplicate display names.
 
     ```bash
     oci iot digital-twin-adapter list \
@@ -38,7 +38,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
     export FLAT_PSI_WATER_PUMP_ADAPTER_ID='<flat-psi-water-pump-adapter-ocid>'
     ```
 
-2. Set stable external keys. An external key identifies an indirect device to the gateway routing adapter. It is not an MQTT user name because these pumps do not authenticate to OCI.
+2. Set stable external keys. The gateway routing adapter uses each key to identify an indirect device. These keys are not MQTT user names because the pumps do not authenticate to OCI.
 
     ```bash
     export PUMP_3_EXTERNAL_KEY='water-pump-3'
@@ -47,7 +47,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
 
 ## Task 2: Create the indirect pump twins
 
-1. Create Water Pump 3 with the default adapter. It has no `--auth-id`; its `--gateways` array associates it with Gateway 1.
+1. Create Water Pump 3 with the default adapter. Do not set `--auth-id`. Its `--gateways` array associates it with Gateway 1.
 
     ```bash
     export PUMP_3_INSTANCE_ID=$(oci iot digital-twin-instance create \
@@ -62,7 +62,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       --query 'data.id' --raw-output)
     ```
 
-2. Create Water Pump 4 with the Flat PSI adapter. It uses the same WaterPump model and the same gateway association as Water Pump 3.
+2. Create Water Pump 4 with the Flat PSI adapter. It uses the same WaterPump model and gateway association as Water Pump 3.
 
     ```bash
     export PUMP_4_INSTANCE_ID=$(oci iot digital-twin-instance create \
@@ -77,7 +77,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       --query 'data.id' --raw-output)
     ```
 
-3. Confirm the connectivity and gateway association. The `auth-id` field is null for both indirect pumps.
+3. Confirm the connectivity and gateway association. Both indirect pumps have a null `auth-id`.
 
     ```bash
     oci iot digital-twin-instance get \
@@ -89,7 +89,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       --query 'data.{name:"display-name",type:"connectivity-type",auth:"auth-id",gateways:gateways,key:"external-key"}'
     ```
 
-4. **Optional:** List every indirectly connected device associated with Gateway 1. This read-only pipeline first lists only indirect twins in the IoT domain, then uses `jq` to filter each twin's `gateways` array for `$GATEWAY_INSTANCE_ID`. OCI IoT does not provide a server-side list filter for a particular gateway, so this command performs that last filter locally. This step is for informational purposes and is not required to continue with the lab.
+4. **Optional:** List devices associated with Gateway 1. This read-only pipeline lists indirect twins, then uses `jq` to filter each `gateways` array for `$GATEWAY_INSTANCE_ID`. OCI IoT has no server-side filter for a specific gateway, so `jq` completes that filter locally. This informational step is not required for the rest of the lab.
 
     ```bash
     oci iot digital-twin-instance list \
@@ -110,7 +110,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
 
 ## Task 3: Connect Gateway 1 and publish telemetry
 
-1. Configure MQTTX for Gateway 1. Use `mqtts://$IOT_DEVICE_HOST`, port `8883`, TLS, a clean session, `$GATEWAY_EXTERNAL_KEY` as the user name, and `$GATEWAY_SECRET_VALUE` as the password.
+1. Configure MQTTX for Gateway 1. Use `mqtts://$IOT_DEVICE_HOST`, port `8883`, TLS, and a clean session. Use `$GATEWAY_EXTERNAL_KEY` as the user name and `$GATEWAY_SECRET_VALUE` as the password.
 
 2. Publish gateway status telemetry to the `data` topic. The empty target keeps this message with Gateway 1.
 
@@ -122,7 +122,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       -u "$GATEWAY_EXTERNAL_KEY" -P "$GATEWAY_SECRET_VALUE"
     ```
 
-3. Publish model-shaped telemetry for Water Pump 3. The `water-pumps/water-pump-3` path resolves the target external key and delegates the payload to Pump 3's default adapter.
+3. Publish model-shaped telemetry for Water Pump 3. The `water-pumps/water-pump-3` path resolves the target external key. OCI IoT sends the payload to Pump 3's default adapter.
 
     ```bash
     mqttx pub \
@@ -132,7 +132,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       -u "$GATEWAY_EXTERNAL_KEY" -P "$GATEWAY_SECRET_VALUE"
     ```
 
-4. Publish flat PSI telemetry for Water Pump 4. The gateway resolves Pump 4 from the path and supplies `timeObserved`; the target adapter inherits that timestamp. The target adapter receives the original endpoint, but its wildcard route matches it. It maps the flat pump fields, converts PSI to bar, and builds the nested motor component. No gateway-specific Flat PSI adapter is required.
+4. Publish flat PSI telemetry for Water Pump 4. The gateway resolves Pump 4 from the path and supplies `timeObserved`. The target adapter inherits that timestamp and receives the original endpoint. Its wildcard route matches the endpoint, maps flat pump fields, converts PSI to bar, and builds the nested motor component. No gateway-specific Flat PSI adapter is required.
 
     ```bash
     mqttx pub \
@@ -144,7 +144,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
 
 ## Task 4: Verify normalized state and gateway association
 
-1. Retrieve latest content and metadata for Gateway 1 and both pumps.
+1. Retrieve the latest content and metadata for Gateway 1 and both pumps.
 
     ```bash
     oci iot digital-twin-instance get-content \
@@ -160,7 +160,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       --should-include-metadata true
     ```
 
-2. Confirm both pumps expose the canonical WaterPump paths. For Water Pump 4, `62.37` PSI is approximately `4.30` bar. Confirm recent `timeLastHeard` metadata for the gateway and both pumps.
+2. Confirm that both pumps expose the canonical WaterPump paths. For Water Pump 4, `62.37` PSI is approximately `4.30` bar. Check recent `timeLastHeard` metadata for the gateway and both pumps.
 
 ## Learn More
 
