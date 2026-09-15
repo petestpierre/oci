@@ -22,7 +22,7 @@ In this workshop, you will:
 - A Vault and master encryption key that the IoT domain can read for gateway credentials.
 - The ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters.
 
-If your IoT domain does not already contain the WaterPump assets, create them with [Appendix A: Create Required WaterPump Models and Adapters](../appendix-water-pump-assets/appendix-water-pump-assets.md). The appendix makes this workshop self-contained; it does not require the [earlier getting-started workshop](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4515).
+If your IoT domain does not already contain the WaterPump assets, create them with [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](../appendix-water-pump-assets/appendix-water-pump-assets.md). The appendix makes this workshop self-contained; it does not require the [earlier getting-started workshop](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4515).
 
 ## Workshop Flow
 

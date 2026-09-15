@@ -21,11 +21,11 @@ In this lab, you will:
 - Have the ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters in the IoT domain.
 - Retain `IOT_DOMAIN_OCID`, `GATEWAY_INSTANCE_ID`, `GATEWAY_EXTERNAL_KEY`, `GATEWAY_SECRET_VALUE`, and `IOT_DEVICE_HOST` from Lab 2.
 
-If the WaterPump models or adapters are missing, create them with [Appendix A: Create Required WaterPump Models and Adapters](../appendix-water-pump-assets/appendix-water-pump-assets.md).
+If the WaterPump models or adapters are missing, create them with [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](../appendix-water-pump-assets/appendix-water-pump-assets.md).
 
 ## Task 1: Locate the WaterPump assets
 
-1. List active WaterPump adapters. Identify the adapter that accepts model-shaped payloads and the adapter that maps flat PSI payloads. Set the saved identifiers from Appendix A if you created the assets during this workshop.
+1. List active WaterPump adapters. Identify **Water Pump Default Adapter** and **Water Pump Flat PSI Adapter**, the same adapter definitions used in the Getting Started workshop. Set their existing OCIDs; do not create duplicate adapters with the same display names.
 
     ```bash
     oci iot digital-twin-adapter list \
@@ -132,7 +132,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
       -u "$GATEWAY_EXTERNAL_KEY" -P "$GATEWAY_SECRET_VALUE"
     ```
 
-4. Publish flat PSI telemetry for Water Pump 4. The gateway resolves Pump 4 from the path, and Pump 4's adapter converts PSI to bar and creates the nested motor component.
+4. Publish flat PSI telemetry for Water Pump 4. The gateway resolves Pump 4 from the path and supplies `timeObserved`; the target adapter inherits that timestamp. The target adapter receives the original endpoint, but its wildcard route matches it. It maps the flat pump fields, converts PSI to bar, and builds the nested motor component. No gateway-specific Flat PSI adapter is required.
 
     ```bash
     mqttx pub \
@@ -165,6 +165,7 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
 ## Learn More
 
 - [Scenario: Create digital twins for indirectly connected devices using a gateway](https://docs.oracle.com/en-us/iaas/Content/internet-of-things/gateway-instance.htm)
+- [Route indirect device data using target and contentRoot](https://docs.oracle.com/en-us/iaas/Content/internet-of-things/gateway-target-content-root.htm)
 - [IoT domain database schema reference](https://docs.oracle.com/en-us/iaas/Content/internet-of-things/iot-domain-database-schema.htm)
 
 ## Acknowledgements
