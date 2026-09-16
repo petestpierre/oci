@@ -2,7 +2,9 @@
 
 ## Introduction
 
-Use this appendix when the IoT domain lacks models or adapters required for this workshop. Create the model files in this order: Factory, ProductionLine, ElectricMotor, and WaterPump. Factory and ProductionLine align this workshop with [Get Started with OCI Internet of Things Platform](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4515); they are not needed to test gateway or indirect-device connectivity, but ProductionLine lets the WaterPump model retain its `installedOn` relationship. The WaterPump model uses ElectricMotor as a component and supports both model-shaped and flat telemetry after adapter normalization. Installing the full model set preserves compatibility with future labs.
+Use this appendix only when the IoT domain you are using does not contain the models and adapters created in [Get Started with OCI Internet of Things Platform](https://livelabs.oracle.com/ords/r/dbpm/livelabs/view-workshop?wid=4515). If those assets are available, retain their OCIDs and reuse them rather than creating duplicate models or adapters.
+
+Continue with this appendix only if your OCI IoT domain lacks those models and adapters. The tasks create the Factory, ProductionLine, ElectricMotor, and WaterPump models in that order, followed by the default and Flat PSI WaterPump adapters. Factory and ProductionLine keep the WaterPump model consistent with Getting Started. ProductionLine supplies the target for the WaterPump `installedOn` relationship, while WaterPump uses ElectricMotor as a component. Installing the complete model set also supports future labs.
 
 Estimated Time: 55 minutes
 
@@ -277,7 +279,7 @@ In this appendix, you will:
 - [Creating digital twin models](https://docs.oracle.com/en-us/iaas/Content/internet-of-things/create-digital-twin-model.htm)
 - [Creating digital twin adapters](https://docs.oracle.com/en-us/iaas/Content/internet-of-things/create-digital-twin-adapter.htm)
 - [Digital twin model overview](https://docs.oracle.com/en-us/iaas/Content/internet-of-things/digital-twin-models.htm)
-- [DTDL v3 specification](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v3/DTDL.v3.md)
+- [DTDL v3 specification](https://azure.github.io/opendigitaltwins-dtdl/DTDL/v3/DTDL.v3.html)
 
 ## Acknowledgements
 

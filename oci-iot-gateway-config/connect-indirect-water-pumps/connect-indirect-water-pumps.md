@@ -17,11 +17,11 @@ In this lab, you will:
 
 ### Prerequisites
 
-- Complete [Lab 2: Create the Gateway and Routing Adapter](../create-gateway-and-routing/create-gateway-and-routing.md).
+- Complete [Lab 2: Create the Gateway and Routing Adapter](?lab=create-gateway-and-routing).
 - Have the ElectricMotor and WaterPump models and the default and Flat PSI WaterPump adapters in the IoT domain.
 - Retain `IOT_DOMAIN_OCID`, `GATEWAY_INSTANCE_ID`, `GATEWAY_EXTERNAL_KEY`, `GATEWAY_SECRET_VALUE`, and `IOT_DEVICE_HOST` from Lab 2.
 
-If the WaterPump models or adapters are missing, create them with [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](../appendix-water-pump-assets/appendix-water-pump-assets.md).
+If the WaterPump models or adapters are missing, create them with [Appendix A: Create Required Factory, Production Line, and WaterPump Assets](?lab=appendix-water-pump-assets).
 
 ## Task 1: Locate the WaterPump assets
 
@@ -158,6 +158,45 @@ If the WaterPump models or adapters are missing, create them with [Appendix A: C
     oci iot digital-twin-instance get-content \
       --digital-twin-instance-id "$PUMP_4_INSTANCE_ID" \
       --should-include-metadata true
+    ```
+
+    The first response shows Gateway 1 status. The second shows Water Pump 3 values in the model-shaped payload. The third shows Water Pump 4 values after the Flat PSI adapter normalizes its payload. For Water Pump 4, look for the canonical `dischargePressure`, `flowRate`, and nested `motor` fields. The metadata records the observation time for each field and `timeLastHeard` for the pump. Your `etag` value will differ.
+
+    The following is an example Water Pump 4 response:
+
+    ```json
+    {
+      "data": {
+        "_metadata": {
+          "dischargePressure": {
+            "timeObserved": "2026-09-02T18:02:00.000000+00:00"
+          },
+          "flowRate": {
+            "timeObserved": "2026-09-02T18:02:00.000000+00:00"
+          },
+          "motor": {
+            "motorTemperature": {
+              "timeObserved": "2026-09-02T18:02:00.000000+00:00"
+            },
+            "powerConsumption": {
+              "timeObserved": "2026-09-02T18:02:00.000000+00:00"
+            },
+            "vibrationLevel": {
+              "timeObserved": "2026-09-02T18:02:00.000000+00:00"
+            }
+          },
+          "timeLastHeard": "2026-09-02T18:02:00.000000+00:00"
+        },
+        "dischargePressure": 4.300260121773,
+        "flowRate": 247.5,
+        "motor": {
+          "motorTemperature": 68.4,
+          "powerConsumption": 12.6,
+          "vibrationLevel": 1.7
+        }
+      },
+      "etag": "06a4a140a4c7d6d8cc66bc5cb5bc591dc89c98feb78fbdd947ac37e56d4c04d0"
+    }
     ```
 
 2. Confirm that both pumps expose the canonical WaterPump paths. For Water Pump 4, `62.37` PSI is approximately `4.30` bar. Check recent `timeLastHeard` metadata for the gateway and both pumps.
