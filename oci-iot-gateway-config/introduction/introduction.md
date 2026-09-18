@@ -2,9 +2,9 @@
 
 ## Introduction
 
-This workshop extends a water-pump digital-twin scenario to devices that cannot connect directly to OCI. You create one authenticated gateway and use it to forward telemetry for two indirectly connected water pumps. The gateway publishes its own health data and identifies each pump from the endpoint path. OCI IoT delegates a forwarded payload to the target pump's adapter for normalization.
+This workshop extends a water-pump digital twin scenario to devices that cannot connect directly to OCI. You create one authenticated gateway and use it to forward telemetry for two indirectly connected water pumps. The gateway publishes its own health data and identifies each pump from the endpoint path. OCI IoT delegates a forwarded payload to the target pump's adapter for normalization.
 
-Estimated Workshop Time: 120 minutes
+Estimated Workshop Time: 2 hours with existing assets; approximately 2 hours and 55 minutes if you complete the full appendix.
 
 ### Objectives
 

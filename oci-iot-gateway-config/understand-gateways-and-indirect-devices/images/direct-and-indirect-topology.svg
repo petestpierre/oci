@@ -6,9 +6,9 @@
     .ink { fill:#252d31; stroke:#252d31; } .red { fill:#c74634; stroke:#c74634; }
     .outline { fill:#ffffff; stroke:#c74634; stroke-width:4; } .line { fill:none; stroke:#c74634; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
     .dashed { fill:none; stroke:#c74634; stroke-width:5; stroke-dasharray:13 11; stroke-linecap:round; }
-    .label { font-family:Arial,Helvetica,sans-serif; fill:#252d31; font-size:22px; font-weight:700; }
-    .caption { font-family:Arial,Helvetica,sans-serif; fill:#4b5559; font-size:17px; }
-    .small { font-family:Arial,Helvetica,sans-serif; fill:#4b5559; font-size:15px; }
+    .label { font-family:Arial,Helvetica,sans-serif; fill:#252d31; font-size:24px; font-weight:700; }
+    .caption { font-family:Arial,Helvetica,sans-serif; fill:#4b5559; font-size:19px; }
+    .small { font-family:Arial,Helvetica,sans-serif; fill:#4b5559; font-size:17px; }
   </style>
   <text x="80" y="70" class="label" font-size="30">Directly connected device</text>
   <text x="80" y="402" class="label" font-size="30">Indirectly connected device</text>

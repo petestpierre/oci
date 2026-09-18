@@ -36,7 +36,7 @@ In this lab, you will:
 
 4. The gateway adapter resolves the message target before it evaluates routes. When the target matches an associated indirect-device external key, OCI IoT sends the payload to that device's adapter. An empty or null target leaves the message with the gateway. Lab 2 creates the gateway model and routing adapter before Lab 3 creates the pumps.
 
-    ![Gateway routing selects one associated indirect device](images/gateway-routing-target-selection.svg)
+    ![Gateway routing sends each pump payload to its matching indirect twin adapter, while gateway health data remains with the gateway](images/gateway-routing-flow.png)
 
 5. In this workshop, the segment after `water-pumps/` identifies the target pump. Gateway health telemetry uses `data` and stays with Gateway 1. After routing, each pump can use an adapter that matches its payload shape.
 
@@ -62,16 +62,16 @@ In this lab, you will:
     Q: What does the gateway adapter target determine for a forwarded message?
     - Which gateway certificate OCI uses for the MQTT connection
     - Which WaterPump model definition is deleted after processing
-    * Which associated indirect device should receive the payload for its adapter to process
+    * Which associated indirect digital twin instance should receive the payload for its adapter to process
     - Whether the device must change to direct connectivity
-    > The gateway resolves a target before it evaluates routes. When the target matches an associated indirect-device external key, OCI IoT sends the payload to that device's adapter.
+    > The gateway resolves a target before it evaluates routes. When the target matches an associated indirect digital twin instance's external key, OCI IoT delegates the payload to that instance's adapter.
 
     Q: Why can the two indirect pumps in this workshop use different adapters?
     - A gateway can authenticate only one indirect device at a time
     - Each adapter creates a separate IoT domain
-    * After the gateway routes a message to a target pump, that pump's adapter can normalize its particular payload shape
+    * After the gateway routes a message to the correct indirectly connected pump digital twin, the adapter defined for that digital twin instance can normalize its particular payload shape
     - An indirectly connected device cannot use the same model as another device
-    > Gateway routing selects the target device. That device's adapter maps its payload to the shared WaterPump model, so the pumps can use different source formats.
+    > Gateway routing selects the target indirectly connected digital twin instance. The adapter defined for that instance maps its payload to the shared WaterPump model, so the pumps can use different source formats.
     ```
 
     You may now **proceed to the next lab**.
